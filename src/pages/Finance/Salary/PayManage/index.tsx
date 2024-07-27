@@ -1,5 +1,5 @@
 import type { EmployeeCompensation, GetPayType } from '@/apis/pay';
-import { ProTable, type ActionType } from '@ant-design/pro-components';
+import { PageContainer, ProTable, type ActionType } from '@ant-design/pro-components';
 import React, { useRef, useState } from 'react';
 import { EditPayModal } from './PayModal';
 import type { ChangeModalFn, OnDeleteFn } from './usePay';
@@ -191,9 +191,9 @@ export const PayTableList: React.FC<TableListProps> = ({
 
 const PayTablePage: React.FC = () => {
   return (
-    <>
+    <PageContainer>
       <PayTableList search={true} />
-    </>
+    </PageContainer>
   );
 };
 

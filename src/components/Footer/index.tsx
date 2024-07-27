@@ -1,4 +1,3 @@
-import { GithubOutlined } from '@ant-design/icons';
 import { DefaultFooter } from '@ant-design/pro-components';
 import React from 'react';
 
@@ -8,24 +7,24 @@ const Footer: React.FC = () => {
       style={{
         background: 'none',
       }}
-      copyright="Powered by Ant Desgin"
+      copyright="Powered by YangYang"
       links={[
         {
           key: 'Ant Design Pro',
-          title: 'Ant Design Pro',
-          href: 'https://pro.ant.design',
+          title: '羊羊',
+          href: '',
           blankTarget: true,
         },
         {
           key: 'github',
-          title: <GithubOutlined />,
-          href: 'https://github.com/ant-design/ant-design-pro',
+          title: 'de',
+          href: '',
           blankTarget: true,
         },
         {
           key: 'Ant Design',
-          title: 'Ant Design',
-          href: 'https://ant.design',
+          title: '财务系统',
+          href: '',
           blankTarget: true,
         },
       ]}

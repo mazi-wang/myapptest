@@ -10,7 +10,11 @@
  * @param icon 配置路由的图标，取值参考 https://ant.design/components/icon-cn， 注意去除风格后缀和大小写，如想要配置图标为 <StepBackwardOutlined /> 则取值应为 stepBackward 或 StepBackward，如想要配置图标为 <UserOutlined /> 则取值应为 user 或者 User
  * @doc https://umijs.org/docs/guides/routes
  */
+
+import myRoutes from './routes-v1.json';
+
 export default [
+  ...myRoutes,
   {
     path: '/user',
     layout: false,

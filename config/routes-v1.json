@@ -1,0 +1,146 @@
+[
+  {
+    "path": "/finance",
+    "icon": "pieChart",
+    "name": "财报数据管理",
+    "access": "/finance",
+    "routes": [
+      {
+        "path": "/finance/salary",
+        "name": "员工工资情况",
+        "component": "./Finance/Salary/PayManage",
+        "access": "/finance/salary"
+      },
+      {
+        "path": "/finance/shop",
+        "name": "店铺管理",
+        "routes": [
+          {
+            "path": "/finance/shop/start-user",
+            "name": "整体报表",
+            "component": "./BaseInfoManage/ShopManage/ShopStartList",
+            "access": "/finance/shop/start-user"
+          },
+          {
+            "path": "/finance/shop/list",
+            "name": "店铺列表",
+            "component": "./BaseInfoManage/ShopManage/ShopList",
+            "access": "/finance/shop/list"
+          }
+        ]
+      },
+      {
+        "path": "/finance/shop-commerce-channel/Sell-list",
+        "name": "平台列表",
+        "component": "./BaseInfoManage/ShopManage/ShopECommerceChannelManage/ShopECommerceChanneSellList",
+        "access": "/finance/shop-commerce-channel/Sell-list"
+      },
+      {
+        "path": "/finance/Swiping",
+        "name": "刷单列表",
+        "component": "./BaseInfoManage/ShopManage/Swiping",
+        "access": "/finance/Swiping"
+      },
+      {
+        "path": "/finance/project",
+        "name": "项目管理",
+        "access": "/finance/project",
+        "routes": [
+          {
+            "path": "/finance/project/list",
+            "name": "项目列表",
+            "component": "./BaseInfoManage/ProjectManage/ProjectList",
+            "access": "/finance/project/list"
+          },
+          {
+            "path": "/finance/project/list-user",
+            "name": "项目用户列表",
+            "component": "./BaseInfoManage/ProjectManage/ProjectListUser",
+            "access": "/finance/project/list-user"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "path": "/data",
+    "icon": "database",
+    "name": "绩效管理",
+    "routes": [
+      {
+        "path": "/data/department/ServicePerformance",
+        "name": "客服绩效",
+        "component": "./BaseInfoManage/ShopManage/ServicePerformance",
+        "access": "/data/department/ServicePerformance"
+      },
+      {
+        "path": "/data/department/ServiceList",
+        "name": "客服指标",
+        "component": "./BaseInfoManage/ShopManage/ServicePage",
+        "access": "/data/department/ServiceList"
+      },
+      {
+        "path": "/data/monthly",
+        "name": "考勤设置",
+        "component": "./BaseInfoManage/MonthlyManage",
+        "access": "/data/monthly"
+      }
+    ]
+  },
+  {
+    "path": "/base-info",
+    "icon": "user",
+    "name": "基本信息管理",
+    "routes": [
+      {
+        "path": "/base-info/user/list",
+        "name": "员工列表",
+        "component": "./BaseInfoManage/UserManage/UserList",
+        "access": "/base-info/user/list"
+      },
+      {
+        "path": "/base-info/post/list",
+        "name": "岗位列表",
+        "component": "./BaseInfoManage/PostManage/PostList",
+        "access": "/base-info/post/list"
+      }
+    ]
+  },
+  {
+    "path": "/permission",
+    "icon": "userSwitch",
+    "name": "权限管理",
+    "routes": [
+      {
+        "path": "/permission/role",
+        "name": "角色管理",
+        "routes": [
+          {
+            "path": "/permission/role/list",
+            "component": "./PermissionManage/RoleManage/RoleList",
+            "name": "角色列表",
+            "access": "/permission/role/list"
+          }
+        ]
+      },
+      {
+        "path": "/permission/interface",
+        "name": "接口管理",
+        "routes": [
+          {
+            "path": "/permission/interface/group",
+            "component": "./PermissionManage/InterfaceManage/GroupManage",
+            "name": "接口分组管理",
+            "access": "/permission/interface/group"
+          }
+        ]
+      },
+      {
+        "path": "permission/log/list",
+        "component": "./OperationLogManage/OperationLogList",
+        "name": "操作日志列表",
+        "access": "/log/list"
+      }
+    ]
+  }
+]

@@ -1,0 +1,21 @@
+.service {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.search {
+  margin-bottom: 10px;
+  padding: 20px;
+  background-color: #fff;
+}
+
+.tableStyle {
+  margin-bottom: 10px;
+  padding: 20px;
+  background-color: #fff;
+}
+
+.title {
+  font-size: 1.2rem;
+}

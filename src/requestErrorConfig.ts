@@ -1,6 +1,8 @@
-﻿import type { RequestOptions } from '@@/plugin-request/request';
+﻿import { history } from '@@/core/history';
+import type { RequestOptions } from '@@/plugin-request/request';
 import type { RequestConfig } from '@umijs/max';
 import { message, notification } from 'antd';
+import { currentUser } from './services/apis/user';
 
 // 错误处理方案： 错误类型
 enum ErrorShowType {
@@ -18,6 +20,49 @@ interface ResponseStructure {
   errorMessage?: string;
   showType?: ErrorShowType;
 }
+
+// 请求头中的token的key
+const TOKEN_KEY_IN_REQ_HEADER = 'Authorization';
+// 请求头中的token前缀
+const TOKEN_PREFIX_IN_HEADER = 'Bearer ';
+// 响应头中的access_token的key
+const ACCESS_TOKEN_KEY_IN_RESP_HEADER = 'x-access-token';
+// 响应头中的refresh_token的key
+const REFRESH_TOKEN_KEY_IN_RESP_HEADER = 'x-refresh-token';
+
+// 本地存储accessToken的key
+const LOC_ACCESS_TOKEN_KEY = 'YANG_ACCESS_TOKEN';
+// 本地存储refreshToken的key
+const LOC_REFRESH_TOKEN_KEY = 'YANG_REFRESH_TOKEN';
+// 本地存储接口更新版本
+const LOC_INTER_UPDATE_VERSION = 'LOC_INTER_UPDATE_VERSION';
+// 本地存储接口列表的key
+const LOC_INTER_LIST_KEY = 'INTER_LIST';
+// 本地存储接口列表的缓存时间
+const LOC_INTER_LIST_TIME = 1000 * 60 * 60 * 24 * 7;
+
+const WHITE_LIST = ['/api/user/login'];
+
+export enum LoginErrorEnum {
+  INVALID_TOKEN = 10102,
+  NON_LOGIN = 10103,
+  NON_AUTHORIZATION = 403,
+}
+
+function downloadFile(blob, filename) {
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.style.display = 'none';
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  window.URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+}
+
+// 是否在刷新token
+let isRefreshToken = false;
 
 /**
  * @name 错误处理
@@ -89,7 +134,21 @@ export const errorConfig: RequestConfig = {
   requestInterceptors: [
     (config: RequestOptions) => {
       // 拦截请求配置，进行个性化处理。
-      const url = config?.url?.concat('?token = 123');
+      const url = config?.url;
+
+      console.log(config);
+
+      //   console.log("请求地址：", url)
+      if (url && !WHITE_LIST.includes(url)) {
+        const token = localStorage.getItem(LOC_ACCESS_TOKEN_KEY);
+        if (token && token !== 'undefined') {
+          config.headers = {
+            ...config.headers,
+            [TOKEN_KEY_IN_REQ_HEADER]: TOKEN_PREFIX_IN_HEADER + token,
+          };
+        }
+      }
+
       return { ...config, url };
     },
   ],
@@ -97,13 +156,81 @@ export const errorConfig: RequestConfig = {
   // 响应拦截器
   responseInterceptors: [
     (response) => {
-      // 拦截响应数据，进行个性化处理
-      const { data } = response as unknown as ResponseStructure;
+      const { headers } = response;
+      const contentType = headers['content-type'];
 
-      if (data?.success === false) {
-        message.error('请求失败！');
+      const result = response.data;
+
+      if (
+        contentType &&
+        contentType.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+      ) {
+        const blob = response.blob();
+        const contentDisposition = headers['content-disposition'];
+        let filename = 'download.xlsx';
+
+        if (contentDisposition) {
+          const matches = /filename="(.+)"/.exec(contentDisposition);
+          if (matches && matches[1]) {
+            filename = decodeURIComponent(matches[1]);
+          }
+        }
+
+        downloadFile(blob, filename);
+        return response;
       }
-      return response;
+
+      switch (result.code) {
+        case LoginErrorEnum.INVALID_TOKEN: {
+          //   console.log("刷新token")
+          const refreshToken = localStorage.getItem(LOC_REFRESH_TOKEN_KEY);
+          if (refreshToken) {
+            if (!isRefreshToken) {
+              isRefreshToken = true;
+
+              localStorage.setItem(LOC_ACCESS_TOKEN_KEY, refreshToken);
+              async function refreshResult() {
+                const res = await currentUser();
+                if (!res.data) return history.push('/login');
+
+                isRefreshToken = false;
+              }
+              refreshResult();
+
+              return refreshResult;
+            }
+          } else {
+            return history.push('/login');
+          }
+        }
+        case LoginErrorEnum.NON_AUTHORIZATION: {
+          return history.push('/403');
+        }
+        case LoginErrorEnum.NON_LOGIN: {
+          return history.push('/login');
+        }
+        default: {
+          //   console.log("location: ", location)
+          if (headers[ACCESS_TOKEN_KEY_IN_RESP_HEADER]) {
+            const access_token = headers[ACCESS_TOKEN_KEY_IN_RESP_HEADER]?.replace(
+              TOKEN_PREFIX_IN_HEADER,
+              '',
+            );
+            const refresh_token = headers[REFRESH_TOKEN_KEY_IN_RESP_HEADER]?.replace(
+              TOKEN_PREFIX_IN_HEADER,
+              '',
+            );
+            if (typeof access_token === 'string') {
+              localStorage.setItem(LOC_ACCESS_TOKEN_KEY, access_token);
+            }
+            if (typeof refresh_token === 'string') {
+              localStorage.setItem(LOC_REFRESH_TOKEN_KEY, refresh_token);
+            }
+          }
+
+          return response;
+        }
+      }
     },
   ],
 };
